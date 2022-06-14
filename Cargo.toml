@@ -1,0 +1,14 @@
+[package]
+name = "kustomize-pass"
+description = "kustomize generator and transformer plugin for pass managed secrets"
+version = "0.0.1"
+authors = ["Finn Sell <dev@finn-thorben.me>"]
+edition = "2021"
+repository = "https://github.com/ftsell/kustomize-pass"
+license = "MIT"
+keywords = ["kustomize", "pass", "kubernetes", "secret", "password"]
+categories = ["command-line-utilities", "config"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
