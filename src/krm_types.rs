@@ -1,5 +1,6 @@
 //! Types defined by the [KRM Function Specification](https://github.com/kubernetes-sigs/kustomize/blob/master/cmd/config/docs/api-conventions/functions-spec.md)
 //! used for program input and output
+use anyhow::{anyhow, Context};
 use serde::{Deserialize, Serialize};
 use serde_yaml::{Mapping, Value};
 
@@ -18,18 +19,33 @@ pub struct InputResourceList {
     ///
     ///  A function will read this field in the input ResourceList and populate
     ///  this field in the output ResourceList.
-    items: Vec<String>,
+    items: Vec<Value>,
 
     /// An optional Kubernetes object for passing arguments to a
     /// function invocation.
     function_config: Option<String>,
 }
 
+impl InputResourceList {
+    /// Ensure that the apiVersion and kind fields of the document are as they should be for a ResourceList
+    pub fn ensure_api_version_and_kind(&self) -> anyhow::Result<()> {
+        if self.api_version != "config.kubernetes.io/v1" || self.kind != "ResourceList" {
+            Err(anyhow!(
+                "Unsupported resource {} from api {}",
+                self.kind,
+                self.api_version
+            ))
+        } else {
+            Ok(())
+        }
+    }
+}
+
 /// The Output wire format for KRM functions
 #[derive(Serialize, Deserialize, Eq, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct OutputResourceList {
-    /// Always `config.kubernetes.io/v1` or `config.kubernetes.io/v1beta1`
+    /// Always `config.kubernetes.io/v1` (at least only that is supported by this application)
     api_version: String,
 
     /// Always `ResourceList`
