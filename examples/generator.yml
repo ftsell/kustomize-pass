@@ -1,0 +1,10 @@
+apiVersion: ftsell.de/v1beta1
+kind: PassSecret
+metadata:
+  name: example-secret
+  annotations:
+    config.kubernetes.io/function: |
+      exec:
+        path: /home/ftsell/Projects/kustomize-pass/target/debug/kustomize-pass
+data:
+  example-key: secret-a

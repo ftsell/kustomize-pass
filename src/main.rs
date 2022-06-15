@@ -1,9 +1,12 @@
-mod krm_types;
+mod k8s_types;
+mod secret_conversion;
 
-use crate::krm_types::InputResourceList;
+use crate::k8s_types::{V1Beta1PassSecret, V1Secret};
 use anyhow::Context;
 use clap::Parser;
-use std::io::stdin;
+use k8s_types::V1ResourceList;
+use serde_yaml::Value;
+use std::io::{stdin, stdout};
 use std::process::exit;
 
 ///
@@ -32,13 +35,28 @@ fn main() {
 }
 
 fn safe_main() -> anyhow::Result<()> {
-    log::trace!("Reading and parsing ResourceList from stdin");
-    let input: InputResourceList =
+    // parse input
+    let input: V1ResourceList =
         serde_yaml::from_reader(stdin()).context("Could not parse ResourceList from stdin")?;
-    input.ensure_api_version_and_kind()?;
-    log::trace!("Successfully read and parsed ResourceList from stdin");
+    input.ensure_api_version_kind()?;
 
-    log::debug!("{:?}", input);
+    let function_config: V1Beta1PassSecret =
+        serde_yaml::from_value(Value::Mapping(input.clone().function_config.unwrap()))
+            .context("Could not parse function configuration from input ResourceList")?;
+    function_config.ensure_api_version_kind()?;
 
+    // construct preliminary output with items copied from input
+    log::debug!("Input items: {:#?}", &input.items);
+    let mut output = V1ResourceList::new(input.items);
+
+    // parse function config and handle it by extracting secrets from pass
+    let result: V1Secret = function_config.try_into()?;
+    let result = serde_yaml::to_value(result)?;
+    output.items.push(result);
+
+    // return generated output
+    log::debug!("Output items: {:#?}", &output.items);
+    log::debug!("{}", serde_yaml::to_string(&output).unwrap());
+    serde_yaml::to_writer(stdout(), &output).context("Could not write results to stdout")?;
     Ok(())
 }
