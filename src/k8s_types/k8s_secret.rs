@@ -20,6 +20,11 @@ pub struct V1Secret {
     /// The serialized form of the secret data is a base64 encoded string, representing the arbitrary (possibly non-string) data value here.
     data: Mapping,
 
+    /// stringData allows specifying non-binary secret data in string form.
+    /// It is provided as a write-only input field for convenience.
+    /// All keys and values are merged into the data field on write, overwriting any existing values.
+    string_data: Mapping,
+
     /// Immutable, if set to true, ensures that data stored in the Secret cannot be updated (only object metadata can be modified).
     /// If not set to true, the field can be modified at any time.
     /// Defaulted to nil.
@@ -36,9 +41,10 @@ impl V1Secret {
     /// Create a new Secret object from the given data and configured constants
     pub fn new(
         metadata: K8sObjectMeta,
-        data: Mapping,
         immutable: Option<bool>,
         secret_type: Option<String>,
+        string_data: Mapping,
+        binary_data: Mapping,
     ) -> Self {
         Self {
             k8s_type_id: K8sTypeId {
@@ -46,9 +52,10 @@ impl V1Secret {
                 kind: "Secret".to_string(),
             },
             metadata,
-            data,
             immutable,
             secret_type,
+            string_data,
+            data: binary_data,
         }
     }
 }
