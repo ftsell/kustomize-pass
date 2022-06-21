@@ -10,6 +10,7 @@ fn convert_value(pass_name: &Value) -> anyhow::Result<Value> {
         _ => Err(anyhow!("Mapping is not a string")),
     }?;
 
+    log::debug!("Retrieving {} from pass", &pass_name);
     let pass_entry = match libpass::retrieve(pass_name)
         .context(format!("Could not convert {} to pass secret", pass_name))?
     {
@@ -29,6 +30,11 @@ impl TryFrom<V1Beta1PassSecret> for V1Secret {
     type Error = anyhow::Error;
 
     fn try_from(mut value: V1Beta1PassSecret) -> Result<Self, Self::Error> {
+        log::debug!(
+            "Trying to convert PassSecret {} to Secret",
+            &value.metadata.name
+        );
+
         // remove some internal annotations so that the secret doesn't get stripped out by kustomize
         if let Some(ref mut annotations) = value.metadata.annotations {
             annotations.remove(&Value::String(
@@ -43,6 +49,10 @@ impl TryFrom<V1Beta1PassSecret> for V1Secret {
         }
 
         // construct and return result
+        log::debug!(
+            "Done converting PassSecret {} to Secret",
+            &value.metadata.name
+        );
         Ok(V1Secret::new(
             value.metadata,
             value.data,

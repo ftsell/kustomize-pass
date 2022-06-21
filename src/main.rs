@@ -27,7 +27,7 @@ use std::process::exit;
 
 fn main() {
     let cli_args = CliArgs::parse();
-    flexi_logger::Logger::try_with_str("debug")
+    flexi_logger::Logger::try_with_env_or_str("info")
         .unwrap()
         .log_to_stderr()
         .start()

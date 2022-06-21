@@ -12,7 +12,7 @@ pub(crate) fn print_json_schema() -> anyhow::Result<()> {
 }
 
 pub(crate) fn print_openapi_schema() -> anyhow::Result<()> {
-    log::debug!("Generating Schema for PassSecret");
+    log::debug!("Generating Schema description for PassSecret");
     let mut schema_generator = SchemaGenerator::from(SchemaSettings::openapi3());
     schema_generator.subschema_for::<V1Beta1PassSecret>();
     let mut schema_definitions = schema_generator.take_definitions();
@@ -25,6 +25,7 @@ pub(crate) fn print_openapi_schema() -> anyhow::Result<()> {
     }
 
     // construct the final openapi schema with all necessary metadata
+    log::debug!("Creating OpenApi schema with generated schema descriptions");
     let openapi_schema = openapi3::OpenApi {
         info: openapi3::Info {
             title: env!("CARGO_PKG_NAME").to_owned(),
