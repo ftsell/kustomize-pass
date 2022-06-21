@@ -28,12 +28,13 @@ pub struct V1Secret {
     /// Immutable, if set to true, ensures that data stored in the Secret cannot be updated (only object metadata can be modified).
     /// If not set to true, the field can be modified at any time.
     /// Defaulted to nil.
+    #[serde(skip_serializing_if = "Option::is_none")]
     immutable: Option<bool>,
 
     /// Used to facilitate programmatic handling of secret data.
     ///
     /// See https://kubernetes.io/docs/concepts/configuration/secret/#secret-types
-    #[serde(rename = "type")]
+    #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
     secret_type: Option<String>,
 }
 
