@@ -1,0 +1,79 @@
+---
+openapi: 3.0.0
+info:
+  title: kustomize-pass
+  description: kustomize generator and transformer plugin for pass managed secrets
+  contact:
+    name: Finn Sell <dev@finn-thorben.me>
+  license:
+    name: MIT
+  version: 0.0.1
+paths: {}
+components:
+  schemas:
+    ApiVersion:
+      description: "Possible values for `PassSecret`s apiVersion field"
+      type: string
+      enum:
+        - ftsell.de/v1beta1
+    K8sObjectMeta:
+      description: "Standard object's metadata\n\nSee https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/object-meta/"
+      type: object
+      required:
+        - name
+      properties:
+        annotations:
+          description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.\n\nMore info: http://kubernetes.io/docs/user-guide/annotations"
+          type: object
+          additionalProperties: true
+          nullable: true
+        labels:
+          description: "Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services.\n\nMore info: http://kubernetes.io/docs/user-guide/labels"
+          type: object
+          additionalProperties: true
+          nullable: true
+        name:
+          description: "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated.\n\nMore info: http://kubernetes.io/docs/user-guide/identifiers#names"
+          type: string
+        namespace:
+          description: "Namespace defines the space within which each name must be unique. An empty namespace is equivalent to the \"default\" namespace, but \"default\" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty.\n\nMust be a DNS_LABEL. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/namespaces"
+          type: string
+          nullable: true
+    Kind:
+      description: "Possible values for `PassSecrets`s kind field"
+      type: string
+      enum:
+        - PassSecret
+    V1Beta1PassSecret:
+      description: "The concrete type that is used to configure this application as a KRM function\n\nThe content of this object is similar to the [Kubernetes Secret definition](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/secret-v1/) except that the meaning of the `data` field is different because all values are retrieved from pass."
+      type: object
+      required:
+        - apiVersion
+        - data
+        - kind
+        - metadata
+      properties:
+        apiVersion:
+          description: Kubernetes object apiVersion of this object
+          allOf:
+            - $ref: "#/components/schemas/ApiVersion"
+        data:
+          description: "Data contains the secret data references.\n\nKeys will be copied to the resulting kubernetes secret object while values will be retrieved from pass. This works by using the value of **this** object as the name of the entry in pass.\n\nEach key must consist of alphanumeric characters, '-', '_' or '.'."
+          type: object
+          additionalProperties: true
+        immutable:
+          description: "Immutable, if set to true, ensures that data stored in the Secret cannot be updated (only object metadata can be modified). If not set to true, the field can be modified at any time. Defaulted to nil."
+          type: boolean
+          nullable: true
+        kind:
+          description: Kind of the kubernetes objects
+          allOf:
+            - $ref: "#/components/schemas/Kind"
+        metadata:
+          description: "Standard object's metadata"
+          allOf:
+            - $ref: "#/components/schemas/K8sObjectMeta"
+        type:
+          description: "Used to facilitate programmatic handling of secret data.\n\nSee https://kubernetes.io/docs/concepts/configuration/secret/#secret-types"
+          type: string
+          nullable: true

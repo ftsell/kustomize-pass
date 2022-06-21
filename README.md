@@ -20,6 +20,9 @@ cargo install kustomize-pass
 
 Once *kustomize-pass* is installed, you can use the generator by providing kustomize with the following example resource manifests.
 
+A detailed description of the supported input manifest is provided in openapi format in the [schema.openapi.yaml](./schema.openapi.yaml).
+It can also be generated and printed on-demand by the application.
+
 ```yaml
 # generator.yml
 apiVersion: ftsell.de/v1beta1
