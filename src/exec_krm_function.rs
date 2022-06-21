@@ -4,15 +4,13 @@ use serde_yaml::Value;
 use std::io::{stdin, stdout};
 
 pub(crate) fn exec_krm_function() -> anyhow::Result<()> {
-    // parse input
+    // parse input from stdin
     let input: V1ResourceList =
         serde_yaml::from_reader(stdin()).context("Could not parse ResourceList from stdin")?;
-    input.ensure_api_version_kind()?;
 
     let function_config: V1Beta1PassSecret =
         serde_yaml::from_value(Value::Mapping(input.clone().function_config.unwrap()))
             .context("Could not parse function configuration from input ResourceList")?;
-    function_config.ensure_api_version_kind()?;
 
     // construct preliminary output with items copied from input
     log::debug!("Input items: {:#?}", &input.items);

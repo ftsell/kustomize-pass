@@ -9,7 +9,7 @@ use serde_yaml::{Mapping, Value};
 pub struct V1ResourceList {
     /// Type identification information as apiVersion and kind
     #[serde(flatten)]
-    pub k8s_type_id: K8sTypeId,
+    pub k8s_type_id: K8sTypeId<ApiVersion, Kind>,
 
     ///  A list of Kubernetes objects:
     ///  https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#types-kinds).
@@ -34,12 +34,24 @@ impl V1ResourceList {
     pub fn new(items: Vec<Value>) -> Self {
         Self {
             k8s_type_id: K8sTypeId {
-                api_version: "config.kubernetes.io/v1".to_string(),
-                kind: "ResourceList".to_string(),
+                api_version: ApiVersion::ConfigKubernetesIoV1,
+                kind: Kind::ResourceList,
             },
             results: None,
             function_config: None,
             items,
         }
     }
+}
+
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+pub enum ApiVersion {
+    #[serde(rename = "config.kubernetes.io/v1")]
+    ConfigKubernetesIoV1,
+}
+
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+pub enum Kind {
+    #[serde(rename = "ResourceList")]
+    ResourceList,
 }

@@ -12,7 +12,7 @@ use serde_yaml::Mapping;
 pub struct V1Beta1PassSecret {
     /// Type identification information as apiVersion and kind
     #[serde(flatten)]
-    pub k8s_type_id: K8sTypeId,
+    pub k8s_type_id: K8sTypeId<ApiVersion, Kind>,
 
     /// Standard object's metadata
     pub metadata: K8sObjectMeta,
@@ -38,14 +38,15 @@ pub struct V1Beta1PassSecret {
 }
 
 /// Possible values for `PassSecret`s apiVersion field
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub(crate) enum ApiVersion {
+#[derive(Copy, Clone, Debug, Hash, Serialize, Deserialize, Eq, PartialEq, JsonSchema)]
+pub enum ApiVersion {
     #[serde(rename = "ftsell.de/v1beta1")]
     FtsellDeV1beta1,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub(crate) enum Kind {
+/// Possible values for `PassSecrets`s kind field
+#[derive(Copy, Clone, Debug, Hash, Serialize, Deserialize, Eq, PartialEq, JsonSchema)]
+pub enum Kind {
     #[serde(rename = "PassSecret")]
     PassSecret,
 }
