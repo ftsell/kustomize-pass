@@ -44,7 +44,7 @@ enum CliCommand {
         #[clap(value_enum, short = 'f', long = "format", default_value = "openapi")]
         format: SchemaFormat,
     },
-    /// Execute the main kustomize plugin functionality (default)  
+    /// Execute the main kustomize plugin functionality (default)
     ExecPlugin,
 }
 
