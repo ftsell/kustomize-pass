@@ -1,3 +1,5 @@
+//! Type definitions for objects encoded in YAML and used in kubernetes contexts
+
 mod field_ref;
 mod file_ref;
 mod k8s_secret;
@@ -24,6 +26,7 @@ macro_rules! ensure_api_version_kind_impl {
     };
     ($struct:ty, $apiVersion:literal, $kind:literal, $field:ident) => {
         impl $struct {
+            /// Ensure that the apiVersion and kind field on this object are as they should be
             pub fn ensure_api_version_kind(&self) -> anyhow::Result<()> {
                 anyhow::ensure!(
                     self.$field.api_version == $apiVersion,

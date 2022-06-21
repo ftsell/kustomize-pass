@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
-use serde_yaml::Mapping;
 use crate::k8s_types::{FileRef, ResourceRef};
+use serde::{Deserialize, Serialize};
+use serde_yaml::Mapping;
 
 #[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Hash)]
 #[serde(rename_all = "camelCase")]

@@ -3,7 +3,7 @@ use okapi::{map, openapi3};
 use schemars::gen::{SchemaGenerator, SchemaSettings};
 use schemars::schema_for;
 
-pub fn print_json_schema() -> anyhow::Result<()> {
+pub(crate) fn print_json_schema() -> anyhow::Result<()> {
     log::debug!("Generating schema for PassSecret");
     let schema = schema_for!(V1Beta1PassSecret);
 
@@ -11,7 +11,7 @@ pub fn print_json_schema() -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn print_openapi_schema() -> anyhow::Result<()> {
+pub(crate) fn print_openapi_schema() -> anyhow::Result<()> {
     log::debug!("Generating Schema for PassSecret");
     let mut schema_generator = SchemaGenerator::from(SchemaSettings::openapi3());
     schema_generator.subschema_for::<V1Beta1PassSecret>();

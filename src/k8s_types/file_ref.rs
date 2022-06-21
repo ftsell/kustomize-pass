@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// Necessary metadata for referencing a YAML file in the filesystem
 #[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Hash)]

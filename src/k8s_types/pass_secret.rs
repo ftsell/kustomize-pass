@@ -10,27 +10,42 @@ use serde_yaml::Mapping;
 #[derive(Serialize, Deserialize, Eq, PartialEq, Debug, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct V1Beta1PassSecret {
+    /// Type identification information as apiVersion and kind
     #[serde(flatten)]
     pub k8s_type_id: K8sTypeId,
 
+    /// Standard object's metadata
     pub metadata: K8sObjectMeta,
 
+    /// Data contains the secret data references.
+    ///
+    /// Keys will be copied to the resulting kubernetes secret object while values will be retrieved from pass.
+    /// This works by using the value of **this** object as the name of the entry in pass.
+    ///
+    /// Each key must consist of alphanumeric characters, '-', '_' or '.'.
     pub data: Mapping,
 
+    /// Immutable, if set to true, ensures that data stored in the Secret cannot be updated (only object metadata can be modified).
+    /// If not set to true, the field can be modified at any time.
+    /// Defaulted to nil.
     pub immutable: Option<bool>,
 
+    /// Used to facilitate programmatic handling of secret data.
+    ///
+    /// See https://kubernetes.io/docs/concepts/configuration/secret/#secret-types
     #[serde(rename = "type")]
     pub secret_type: Option<String>,
 }
 
+/// Possible values for `PassSecret`s apiVersion field
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum ApiVersion {
+pub(crate) enum ApiVersion {
     #[serde(rename = "ftsell.de/v1beta1")]
     FtsellDeV1beta1,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Kind {
+pub(crate) enum Kind {
     #[serde(rename = "PassSecret")]
     PassSecret,
 }

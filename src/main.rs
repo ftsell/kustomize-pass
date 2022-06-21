@@ -1,5 +1,20 @@
+//! kustomize generator and transformer plugin for pass managed secrets
+
+#![deny(unsafe_code)]
+#![warn(
+    clippy::all,
+    missing_copy_implementations,
+    missing_debug_implementations,
+    missing_docs,
+    trivial_casts,
+    trivial_numeric_casts,
+    unreachable_pub,
+    unused_lifetimes,
+    unused_qualifications
+)]
+
 mod exec_krm_function;
-mod k8s_types;
+pub mod k8s_types;
 mod print_schema;
 mod secret_conversion;
 

@@ -3,7 +3,7 @@ use anyhow::Context;
 use serde_yaml::Value;
 use std::io::{stdin, stdout};
 
-pub fn exec_krm_function() -> anyhow::Result<()> {
+pub(crate) fn exec_krm_function() -> anyhow::Result<()> {
     // parse input
     let input: V1ResourceList =
         serde_yaml::from_reader(stdin()).context("Could not parse ResourceList from stdin")?;

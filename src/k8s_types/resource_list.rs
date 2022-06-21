@@ -7,6 +7,7 @@ use serde_yaml::{Mapping, Value};
 #[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Hash)]
 #[serde(rename_all = "camelCase")]
 pub struct V1ResourceList {
+    /// Type identification information as apiVersion and kind
     #[serde(flatten)]
     pub k8s_type_id: K8sTypeId,
 
@@ -29,6 +30,7 @@ pub struct V1ResourceList {
 }
 
 impl V1ResourceList {
+    /// Create a new `ResourceList` object with the given items while presetting `apiVersion` and `kind` fields
     pub fn new(items: Vec<Value>) -> Self {
         Self {
             k8s_type_id: K8sTypeId {

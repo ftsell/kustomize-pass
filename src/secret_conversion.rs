@@ -18,7 +18,7 @@ fn convert_value(pass_name: &Value) -> anyhow::Result<Value> {
     }?;
 
     let result = String::from_utf8(pass_entry.plain_io()?.as_ref().clone())?
-        .strip_suffix("\n")
+        .strip_suffix('\n')
         .ok_or_else(|| anyhow!("Could not strip \\n suffix"))?
         .to_string();
 
