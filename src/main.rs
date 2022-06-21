@@ -53,7 +53,7 @@ fn main() {
             CliCommand::ExecPlugin => exec_krm_function::exec_krm_function(),
             CliCommand::PrintSchema { format } => match format {
                 SchemaFormat::JsonSchema => print_schema::print_json_schema(),
-                SchemaFormat::Openapi => todo!(),
+                SchemaFormat::Openapi => print_schema::print_openapi_schema(),
             },
         },
     };

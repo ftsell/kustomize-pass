@@ -20,5 +20,8 @@ log = "0.4.17"
 serde = { version = "1.0.137", features = ["derive"] }
 serde_yaml = "0.8.24"
 serde_json = "1.0.81"
-schemars = { git = "https://github.com/ftsell/schemars.git", branch = "feature/serde_yaml_schema_impl", features = [ "serde_yaml" ] }
+schemars = { version = "0.8.10", features = [ "serde_yaml" ] }
 okapi = "0.7.0-rc.1"
+
+[patch.crates-io]
+schemars = { git = "https://github.com/ftsell/schemars.git", branch = "feature/serde_yaml_schema_impl" }

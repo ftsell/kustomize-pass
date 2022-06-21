@@ -263,7 +263,7 @@ dependencies = [
  "libpass",
  "log",
  "okapi",
- "schemars 0.8.10 (git+https://github.com/ftsell/schemars.git?branch=feature/serde_yaml_schema_impl)",
+ "schemars",
  "serde",
  "serde_json",
  "serde_yaml",
@@ -340,7 +340,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce66b6366e049880a35c378123fddb630b1a1a3c37fa1ca70caaf4a09f6e2893"
 dependencies = [
  "log",
- "schemars 0.8.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "schemars",
  "serde",
  "serde_json",
 ]
@@ -451,37 +451,13 @@ checksum = "f3f6f92acf49d1b98f7a81226834412ada05458b7364277387724a237f062695"
 [[package]]
 name = "schemars"
 version = "0.8.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1847b767a3d62d95cbf3d8a9f0e421cf57a0d8aa4f411d4b16525afb0284d4ed"
-dependencies = [
- "dyn-clone",
- "schemars_derive 0.8.10 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "schemars"
-version = "0.8.10"
 source = "git+https://github.com/ftsell/schemars.git?branch=feature/serde_yaml_schema_impl#c1557c8c55d14d09f86c99484dbb432c8702ca73"
 dependencies = [
  "dyn-clone",
- "schemars_derive 0.8.10 (git+https://github.com/ftsell/schemars.git?branch=feature/serde_yaml_schema_impl)",
+ "schemars_derive",
  "serde",
  "serde_json",
  "serde_yaml",
-]
-
-[[package]]
-name = "schemars_derive"
-version = "0.8.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af4d7e1b012cb3d9129567661a63755ea4b8a7386d339dc945ae187e403c6743"
-dependencies = [
- "proc-macro2",
- "quote",
- "serde_derive_internals",
- "syn",
 ]
 
 [[package]]
