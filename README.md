@@ -7,6 +7,8 @@
 A kustomize plugin that is able to generate secrets by extracting them from [pass](https://www.passwordstore.org/)
 or replace placeholders in other manifests from pass.
 
+**Note:** The package is not yet release on crates.io because it requires [a feature of schemars that is not yet merged](https://github.com/GREsau/schemars/pull/153).
+
 ## Installation
 For installation, this package depends on [gpgme-rs](https://crates.io/crates/gpgme) which requires the gpgme library and its development files (e.g., headers, gpgme-config) to be installed during the build process.
 You should install these using your operating systems package manager.
