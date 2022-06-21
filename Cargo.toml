@@ -11,6 +11,9 @@ license = "MIT"
 keywords = ["kustomize", "pass", "kubernetes", "secret", "password"]
 categories = ["command-line-utilities", "config"]
 
+[profile.release]
+lto = true
+
 [workspace.metadata.release]
 pre-release-commit-message = "bump to version v{{version}}"
 tag-name = "v{{version}}"
