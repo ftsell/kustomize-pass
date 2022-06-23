@@ -101,4 +101,3 @@ components:
           description: "Used to facilitate programmatic handling of secret data.\n\nSee https://kubernetes.io/docs/concepts/configuration/secret/#secret-types"
           type: string
           nullable: true
-
