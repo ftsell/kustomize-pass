@@ -43,7 +43,7 @@ jobs:
         os:
           - { runner: ubuntu-22.04, bin-suffix: linux-ubuntu-2204 }
           - { runner: ubuntu-20.04, bin-suffix: linux-generic }
-    runs-on: ${{ matrix.runner }}
+    runs-on: ${{ matrix.os.runner }}
     needs: [ cargo-release ]
     steps:
       - run: |
@@ -53,10 +53,11 @@ jobs:
         with:
           ref: ${{ needs.cargo-release.outputs.tag }}
       - run: cargo build -v --all-features --profile=release
+      - run: mv target/release/kustomize-pass target/release/kustomize-pass--${{ matrix.os.bin-suffix }}
       - uses: actions/upload-artifact@v3
         with:
-          name: kustomize-pass--${{ matrix.bin-suffix }}
-          path: target/release/kustomize-pass
+          name: kustomize-pass--${{ matrix.os.bin-suffix }}
+          path: target/release/kustomize-pass--${{ matrix.os.bin-suffix }}
 
   github-release:
     runs-on: ubuntu-latest
@@ -68,13 +69,18 @@ jobs:
         with:
           ref: ${{ needs.cargo-release.outputs.tag }}
       - uses: actions/download-artifact@v3
+        with:
+          path: ./artifacts
+      - run: |
+          ls -l artifacts
       - uses: softprops/action-gh-release@v1
         with:
           body_path: changelog.md
           tag_name: ${{ needs.cargo-release.outputs.tag }}
+          fail_on_unmatched_files: true
+          token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            kustomize-pass--linux-ubuntu-2204
-            kustomize-pass--linux-generic
+            artifacts/*/kustomize-pass--**
 
   reset-changelog:
     runs-on: ubuntu-latest

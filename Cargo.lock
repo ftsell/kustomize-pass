@@ -370,7 +370,7 @@ dependencies = [
 
 [[package]]
 name = "kustomize-pass"
-version = "0.2.1"
+version = "0.2.10"
 dependencies = [
  "anyhow",
  "base64",
