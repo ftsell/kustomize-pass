@@ -1,7 +1,6 @@
 # kustomize-pass
 
 [![crates.io Badge](https://img.shields.io/crates/v/kustomize-pass?style=for-the-badge)](https://crates.io/crates/kustomize-pass)
-[![Docs Badge](https://img.shields.io/docsrs/kustomize-pass?style=for-the-badge)](https://docs.rs/kustomize-pass/)
 ![Maintenance Status Badge](https://img.shields.io/maintenance/yes/2022?style=for-the-badge)
 
 A kustomize plugin that is able to generate secrets by extracting them from [pass](https://www.passwordstore.org/)
