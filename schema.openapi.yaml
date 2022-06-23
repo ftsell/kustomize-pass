@@ -7,7 +7,7 @@ info:
     name: Finn Sell <dev@finn-thorben.me>
   license:
     name: MIT
-  version: 0.1.0
+  version: 0.2.0
 paths: {}
 components:
   schemas:
@@ -33,12 +33,14 @@ components:
         annotations:
           description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects.\n\nMore info: http://kubernetes.io/docs/user-guide/annotations"
           type: object
-          additionalProperties: true
+          additionalProperties:
+            type: string
           nullable: true
         labels:
           description: "Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services.\n\nMore info: http://kubernetes.io/docs/user-guide/labels"
           type: object
-          additionalProperties: true
+          additionalProperties:
+            type: string
           nullable: true
         name:
           description: "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated.\n\nMore info: http://kubernetes.io/docs/user-guide/identifiers#names"
@@ -54,18 +56,12 @@ components:
         - PassSecret
     PassSource:
       description: "A reference to the source from which [`PassSecret`](crate::k8s_type::PassSecret) data is retrieved"
-      oneOf:
-        - type: string
-          enum:
-            - Local
+      anyOf:
+        - description: "Use the existing store located at `~/.password-store` or pointed to by environment variable `PASSWORD_STORE_DIR`"
+          type: "null"
         - description: Use a git repository which contains a password store at its root
-          type: object
-          required:
-            - Git
-          properties:
-            Git:
-              $ref: "#/components/schemas/GitPassSource"
-          additionalProperties: false
+          allOf:
+            - $ref: "#/components/schemas/GitPassSource"
     V1Beta1PassSecret:
       description: "The concrete type that is used to configure this application as a KRM function\n\nThe content of this object is similar to the [Kubernetes Secret definition](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/secret-v1/) except that the meaning of the `data` field is different because all values are retrieved from pass."
       type: object
@@ -82,7 +78,8 @@ components:
         data:
           description: "Data contains the secret data references.\n\nKeys will be copied to the resulting kubernetes secret object while values will be retrieved from pass. This works by using the value of **this** object as the name of the entry in pass.\n\nEach key must consist of alphanumeric characters, '-', '_' or '.'."
           type: object
-          additionalProperties: true
+          additionalProperties:
+            type: string
         immutable:
           description: "Immutable, if set to true, ensures that data stored in the Secret cannot be updated (only object metadata can be modified). If not set to true, the field can be modified at any time. Defaulted to nil."
           type: boolean
@@ -97,10 +94,11 @@ components:
             - $ref: "#/components/schemas/K8sObjectMeta"
         source:
           description: Reference to the store from which data of this secret should be retrieved
-          default: Local
+          default: ~
           allOf:
             - $ref: "#/components/schemas/PassSource"
         type:
           description: "Used to facilitate programmatic handling of secret data.\n\nSee https://kubernetes.io/docs/concepts/configuration/secret/#secret-types"
           type: string
           nullable: true
+
