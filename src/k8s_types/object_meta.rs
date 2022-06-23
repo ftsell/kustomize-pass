@@ -1,6 +1,6 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_yaml::Mapping;
+use std::collections::BTreeMap;
 
 /// Standard object's metadata
 ///
@@ -27,12 +27,12 @@ pub struct K8sObjectMeta {
     ///
     /// More info: http://kubernetes.io/docs/user-guide/labels
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub labels: Option<Mapping>,
+    pub labels: Option<BTreeMap<String, String>>,
 
     /// Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata.
     /// They are not queryable and should be preserved when modifying objects.
     ///
     /// More info: http://kubernetes.io/docs/user-guide/annotations
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub annotations: Option<Mapping>,
+    pub annotations: Option<BTreeMap<String, String>>,
 }

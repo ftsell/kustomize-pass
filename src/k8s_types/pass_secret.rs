@@ -1,7 +1,7 @@
 use crate::k8s_types::{K8sObjectMeta, K8sTypeId, PassSource};
 use okapi::schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_yaml::Mapping;
+use std::collections::BTreeMap;
 
 /// The concrete type that is used to configure this application as a KRM function
 ///
@@ -27,7 +27,7 @@ pub struct V1Beta1PassSecret {
     /// This works by using the value of **this** object as the name of the entry in pass.
     ///
     /// Each key must consist of alphanumeric characters, '-', '_' or '.'.
-    pub data: Mapping,
+    pub data: BTreeMap<String, String>,
 
     /// Immutable, if set to true, ensures that data stored in the Secret cannot be updated (only object metadata can be modified).
     /// If not set to true, the field can be modified at any time.

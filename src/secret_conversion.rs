@@ -2,7 +2,7 @@ use crate::k8s_types::V1Secret;
 use crate::V1Beta1PassSecret;
 use anyhow::{anyhow, Context};
 use libpass::StoreEntry;
-use serde_yaml::{Mapping, Value};
+use std::collections::BTreeMap;
 use std::env;
 
 /// An value that is encoded so that it cane easily be used as a value for Kubernetes Secrets
@@ -15,13 +15,7 @@ enum SecretValue {
     String(String),
 }
 
-fn convert_value(pass_name: &Value) -> anyhow::Result<SecretValue> {
-    // convert arguments to usable format
-    let pass_name = match pass_name {
-        Value::String(pass_name) => Ok(pass_name),
-        _ => Err(anyhow!("Mapping is not a string")),
-    }?;
-
+fn convert_value(pass_name: &str) -> anyhow::Result<SecretValue> {
     // retrieve entry from store
     log::debug!("Retrieving {} from pass", &pass_name);
     let pass_entry = match libpass::retrieve(pass_name)
@@ -59,23 +53,17 @@ impl TryFrom<V1Beta1PassSecret> for V1Secret {
 
         // remove some internal annotations so that the secret doesn't get stripped out by kustomize
         if let Some(ref mut annotations) = value.metadata.annotations {
-            annotations.remove(&Value::String(
-                "config.kubernetes.io/local-config".to_string(),
-            ));
-            annotations.remove(&Value::String("config.kubernetes.io/function".to_string()));
+            annotations.remove("config.kubernetes.io/local-config");
+            annotations.remove("config.kubernetes.io/function");
         }
 
         // resolve all pass secrets
-        let mut str_results = Mapping::new();
-        let mut bin_results = Mapping::new();
+        let mut str_results = BTreeMap::new();
+        let mut bin_results = BTreeMap::new();
         for (key, value) in value.data.iter_mut() {
             match convert_value(value)? {
-                SecretValue::String(result) => {
-                    str_results.insert(key.to_owned(), Value::String(result))
-                }
-                SecretValue::Binary(result) => {
-                    bin_results.insert(key.to_owned(), Value::String(result))
-                }
+                SecretValue::String(result) => str_results.insert(key.to_owned(), result),
+                SecretValue::Binary(result) => bin_results.insert(key.to_owned(), result),
             };
         }
 

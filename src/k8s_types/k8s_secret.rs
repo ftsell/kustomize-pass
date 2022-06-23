@@ -1,6 +1,6 @@
 use crate::k8s_types::{K8sObjectMeta, K8sTypeId};
 use serde::{Deserialize, Serialize};
-use serde_yaml::Mapping;
+use std::collections::BTreeMap;
 
 /// Type definition for kubernetes secret resources
 ///
@@ -18,12 +18,12 @@ pub struct V1Secret {
     /// Data contains the secret data.
     /// Each key must consist of alphanumeric characters, '-', '_' or '.'.
     /// The serialized form of the secret data is a base64 encoded string, representing the arbitrary (possibly non-string) data value here.
-    data: Mapping,
+    data: BTreeMap<String, String>,
 
     /// stringData allows specifying non-binary secret data in string form.
     /// It is provided as a write-only input field for convenience.
     /// All keys and values are merged into the data field on write, overwriting any existing values.
-    string_data: Mapping,
+    string_data: BTreeMap<String, String>,
 
     /// Immutable, if set to true, ensures that data stored in the Secret cannot be updated (only object metadata can be modified).
     /// If not set to true, the field can be modified at any time.
@@ -44,8 +44,8 @@ impl V1Secret {
         metadata: K8sObjectMeta,
         immutable: Option<bool>,
         secret_type: Option<String>,
-        string_data: Mapping,
-        binary_data: Mapping,
+        string_data: BTreeMap<String, String>,
+        binary_data: BTreeMap<String, String>,
     ) -> Self {
         Self {
             k8s_type_id: K8sTypeId {
