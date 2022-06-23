@@ -7,7 +7,7 @@ info:
     name: Finn Sell <dev@finn-thorben.me>
   license:
     name: MIT
-  version: 0.0.1
+  version: 0.1.0
 paths: {}
 components:
   schemas:
@@ -16,6 +16,14 @@ components:
       type: string
       enum:
         - ftsell.de/v1beta1
+    GitPassSource:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          description: Git clone url
+          type: string
     K8sObjectMeta:
       description: "Standard object's metadata\n\nSee https://kubernetes.io/docs/reference/kubernetes-api/common-definitions/object-meta/"
       type: object
@@ -44,6 +52,20 @@ components:
       type: string
       enum:
         - PassSecret
+    PassSource:
+      description: "A reference to the source from which [`PassSecret`](crate::k8s_type::PassSecret) data is retrieved"
+      oneOf:
+        - type: string
+          enum:
+            - Local
+        - description: Use a git repository which contains a password store at its root
+          type: object
+          required:
+            - Git
+          properties:
+            Git:
+              $ref: "#/components/schemas/GitPassSource"
+          additionalProperties: false
     V1Beta1PassSecret:
       description: "The concrete type that is used to configure this application as a KRM function\n\nThe content of this object is similar to the [Kubernetes Secret definition](https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/secret-v1/) except that the meaning of the `data` field is different because all values are retrieved from pass."
       type: object
@@ -73,6 +95,11 @@ components:
           description: "Standard object's metadata"
           allOf:
             - $ref: "#/components/schemas/K8sObjectMeta"
+        source:
+          description: Reference to the store from which data of this secret should be retrieved
+          default: Local
+          allOf:
+            - $ref: "#/components/schemas/PassSource"
         type:
           description: "Used to facilitate programmatic handling of secret data.\n\nSee https://kubernetes.io/docs/concepts/configuration/secret/#secret-types"
           type: string

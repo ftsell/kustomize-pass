@@ -1,4 +1,4 @@
-use crate::k8s_types::{K8sObjectMeta, K8sTypeId};
+use crate::k8s_types::{K8sObjectMeta, K8sTypeId, PassSource};
 use okapi::schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Mapping;
@@ -16,6 +16,10 @@ pub struct V1Beta1PassSecret {
 
     /// Standard object's metadata
     pub metadata: K8sObjectMeta,
+
+    /// Reference to the store from which data of this secret should be retrieved
+    #[serde(default)]
+    pub source: PassSource,
 
     /// Data contains the secret data references.
     ///
