@@ -23,9 +23,12 @@ post-release-commit-message = "start next development iteration {{next_version}}
 [dependencies]
 anyhow = "1.0.57"
 base64 = "0.13.0"
+blake2 = "0.10.4"
 clap = { version = "3.2.6", features = ["derive"]}
+directories = "4.0.1"
 flexi_logger = "0.22.5"
 git2 = "0.14.4"
+hex = "0.4.3"
 libpass = "0.3.0"
 log = "0.4.17"
 okapi = "0.7.0-rc.1"

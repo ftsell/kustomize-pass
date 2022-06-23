@@ -6,5 +6,7 @@ metadata:
     config.kubernetes.io/function: |
       exec:
         path: /home/ftsell/Projects/kustomize-pass/target/debug/kustomize-pass
+source:
+  url: git@github.com:Viva-con-Agua/pass.git
 data:
   example-key: secret-a

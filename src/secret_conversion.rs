@@ -3,6 +3,7 @@ use crate::V1Beta1PassSecret;
 use anyhow::{anyhow, Context};
 use libpass::StoreEntry;
 use serde_yaml::{Mapping, Value};
+use std::env;
 
 /// An value that is encoded so that it cane easily be used as a value for Kubernetes Secrets
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -51,6 +52,10 @@ impl TryFrom<V1Beta1PassSecret> for V1Secret {
             "Trying to convert PassSecret {} to Secret",
             &value.metadata.name
         );
+
+        // setup the password store source
+        let store_dir = value.source.setup()?;
+        env::set_var(libpass::PASSWORD_STORE_DIR_ENV, store_dir);
 
         // remove some internal annotations so that the secret doesn't get stripped out by kustomize
         if let Some(ref mut annotations) = value.metadata.annotations {
