@@ -3,7 +3,7 @@
 name = "kustomize-pass"
 description = "kustomize generator and transformer plugin for pass managed secrets"
 documentation = "https://docs.rs/kustomize-pass"
-version = "0.2.10"
+version = "0.2.11"
 authors = ["Finn Sell <dev@finn-thorben.me>"]
 edition = "2021"
 repository = "https://github.com/ftsell/kustomize-pass"
