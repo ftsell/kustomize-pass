@@ -33,6 +33,9 @@ pub struct V1Beta1PassSecret {
     /// Each key must consist of alphanumeric characters, '-', '_' or '.'.
     pub data: BTreeMap<String, String>,
 
+    /// Optional data that is not retrieved from pass but given in plaintext (as string, not base64 encoded)
+    pub plain_data: Option<BTreeMap<String, String>>,
+
     /// Immutable, if set to true, ensures that data stored in the Secret cannot be updated (only object metadata can be modified).
     /// If not set to true, the field can be modified at any time.
     /// Defaulted to nil.

@@ -7,7 +7,7 @@ info:
     name: Finn Sell <dev@finn-thorben.me>
   license:
     name: MIT
-  version: 0.2.11
+  version: 0.3.1
 paths: {}
 components:
   schemas:
@@ -104,6 +104,12 @@ components:
           description: "Standard object's metadata"
           allOf:
             - $ref: "#/components/schemas/K8sObjectMeta"
+        plainData:
+          description: "Optional data that is not retrieved from pass but given in plaintext (as string, not base64 encoded)"
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
         source:
           description: Reference to the store from which data of this secret should be retrieved
           default: ~

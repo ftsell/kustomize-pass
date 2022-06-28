@@ -1,6 +1,6 @@
 use crate::k8s_types::{GeneratorBehavior, V1Secret};
 use crate::V1Beta1PassSecret;
-use anyhow::{anyhow, Context};
+use anyhow::{anyhow, bail, Context};
 use libpass::StoreEntry;
 use std::collections::BTreeMap;
 use std::env;
@@ -76,11 +76,22 @@ impl TryFrom<V1Beta1PassSecret> for V1Secret {
         // resolve all pass secrets
         let mut str_results = BTreeMap::new();
         let mut bin_results = BTreeMap::new();
-        for (key, value) in value.data.iter_mut() {
+        for (key, value) in value.data.iter() {
             match convert_value(value)? {
                 SecretValue::String(result) => str_results.insert(key.to_owned(), result),
                 SecretValue::Binary(result) => bin_results.insert(key.to_owned(), result),
             };
+        }
+
+        // copy plain_data into result
+        if let Some(plain_data) = value.plain_data {
+            for (key, value) in plain_data.iter() {
+                if str_results.contains_key(key) {
+                    bail!("plainData contains key {} but it is also retrieved from pass. This conflict cannot be resolved", key)
+                } else {
+                    str_results.insert(key.to_owned(), value.to_owned());
+                }
+            }
         }
 
         // construct and return result

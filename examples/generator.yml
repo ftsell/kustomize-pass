@@ -8,3 +8,5 @@ metadata:
         path: /home/ftsell/Projects/kustomize-pass/target/debug/kustomize-pass
 data:
   example-key: secret-a
+plainData:
+  plain-key: plain-data
