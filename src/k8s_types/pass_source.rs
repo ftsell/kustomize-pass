@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Context};
 use blake2::digest::{Update, VariableOutput};
 use blake2::Blake2bVar;
-use directories::UserDirs;
+use directories::ProjectDirs;
 use git2::build::{CheckoutBuilder, RepoBuilder};
 use git2::{BranchType, Config, Cred, FetchOptions, RemoteCallbacks, Repository};
 use okapi::schemars::JsonSchema;
@@ -59,12 +59,17 @@ impl GitPassSource {
             .context("Could not finalize digest for constructing a unique password source path")?;
 
         // append hex-encoded digest to '~/.password-store-'
-        let unique_path = ".password-store-".to_owned() + &hex::encode(digest);
-        let unique_path = UserDirs::new()
-            .context("Could not retrieve user directories")?
-            .home_dir()
+        let unique_path = "password-store-".to_owned() + &hex::encode(digest);
+        let unique_path = ProjectDirs::from("de", "ftsell", "kustomize-pass")
+            .context("Could not retrieve project directories")?
+            .data_local_dir()
             .join(unique_path);
 
+        log::trace!(
+            "Computed unique path for repo {} is {}",
+            self.url,
+            unique_path.display()
+        );
         Ok(unique_path)
     }
 
