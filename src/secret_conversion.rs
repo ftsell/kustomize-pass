@@ -1,9 +1,11 @@
-use crate::k8s_types::V1Secret;
+use crate::k8s_types::{GeneratorBehavior, V1Secret};
 use crate::V1Beta1PassSecret;
 use anyhow::{anyhow, Context};
 use libpass::StoreEntry;
 use std::collections::BTreeMap;
 use std::env;
+
+const BEHAVIOR_ANNOTATION: &str = "kustomize.config.k8s.io/behavior";
 
 /// An value that is encoded so that it cane easily be used as a value for Kubernetes Secrets
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -55,6 +57,20 @@ impl TryFrom<V1Beta1PassSecret> for V1Secret {
         if let Some(ref mut annotations) = value.metadata.annotations {
             annotations.remove("config.kubernetes.io/local-config");
             annotations.remove("config.kubernetes.io/function");
+        }
+
+        // set an annotation to configure kustomize merge behavior
+        if value.behavior != GeneratorBehavior::default() {
+            match value.metadata.annotations {
+                Some(ref mut annotations) => {
+                    annotations.insert(BEHAVIOR_ANNOTATION.to_string(), value.behavior.to_string());
+                }
+                None => {
+                    let mut annotations = BTreeMap::new();
+                    annotations.insert(BEHAVIOR_ANNOTATION.to_string(), value.behavior.to_string());
+                    value.metadata.annotations = Some(annotations);
+                }
+            }
         }
 
         // resolve all pass secrets

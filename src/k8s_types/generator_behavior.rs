@@ -25,3 +25,13 @@ impl Default for GeneratorBehavior {
         Self::Create
     }
 }
+
+impl ToString for GeneratorBehavior {
+    fn to_string(&self) -> String {
+        match self {
+            GeneratorBehavior::Create => "create".to_string(),
+            GeneratorBehavior::Replace => "replace".to_string(),
+            GeneratorBehavior::Merge => "merge".to_string(),
+        }
+    }
+}
