@@ -17,3 +17,4 @@ You should read at least the *Breaking Changes* section.
 
 - Add support for setting how kustomize behaves when handling the generated resource.
     This can be done by setting a dedicated `behavior` field in `PassSecret` resources.
+- Print input and output resources on trace log level
