@@ -54,3 +54,14 @@ metadata:
 data:
   example-key: foobar123
 ```
+
+### Setting the generator behavior
+
+Sometimes, you might get the error `Error: merging from generator … exists; behavior must be merge or replace`.
+For the builtin *secretGenerator* and *configMapGenerator*, this can be set by setting a dedicated *behavior* key.
+
+For a *PassSecret*, you will need to add the following annotation to your object:
+```yaml
+annotations:
+  kustomize.config.k8s.io/behavior: replace # or merge
+```
