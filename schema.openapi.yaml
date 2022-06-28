@@ -7,7 +7,7 @@ info:
     name: Finn Sell <dev@finn-thorben.me>
   license:
     name: MIT
-  version: 0.2.0
+  version: 0.2.11
 paths: {}
 components:
   schemas:
@@ -16,6 +16,13 @@ components:
       type: string
       enum:
         - ftsell.de/v1beta1
+    GeneratorBehavior:
+      description: "Possible behavior which kustomize will use when handling generated resources. Defaults to `create`.\n\nSee the [upstream go definition](https://github.com/kubernetes-sigs/kustomize/blob/master/api/types/generatorargs.go)"
+      type: string
+      enum:
+        - create
+        - replace
+        - merge
     GitPassSource:
       type: object
       required:
@@ -75,6 +82,11 @@ components:
           description: Kubernetes object apiVersion of this object
           allOf:
             - $ref: "#/components/schemas/ApiVersion"
+        behavior:
+          description: Which behavior kustomize uses when handling the generated resource
+          default: create
+          allOf:
+            - $ref: "#/components/schemas/GeneratorBehavior"
         data:
           description: "Data contains the secret data references.\n\nKeys will be copied to the resulting kubernetes secret object while values will be retrieved from pass. This works by using the value of **this** object as the name of the entry in pass.\n\nEach key must consist of alphanumeric characters, '-', '_' or '.'."
           type: object
