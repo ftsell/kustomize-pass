@@ -20,9 +20,7 @@ enum SecretValue {
 fn convert_value(pass_name: &str) -> anyhow::Result<SecretValue> {
     // retrieve entry from store
     log::debug!("Retrieving {} from pass", &pass_name);
-    let pass_entry = match libpass::retrieve(pass_name)
-        .context(format!("Could not convert {} to pass secret", pass_name))?
-    {
+    let pass_entry = match libpass::retrieve(pass_name)? {
         StoreEntry::Directory(_) => Err(anyhow!("Entry is a directory")),
         StoreEntry::File(file) => Ok(file),
     }?;
@@ -76,10 +74,13 @@ impl TryFrom<V1Beta1PassSecret> for V1Secret {
         // resolve all pass secrets
         let mut str_results = BTreeMap::new();
         let mut bin_results = BTreeMap::new();
-        for (key, value) in value.data.iter() {
-            match convert_value(value)? {
-                SecretValue::String(result) => str_results.insert(key.to_owned(), result),
-                SecretValue::Binary(result) => bin_results.insert(key.to_owned(), result),
+        for (i_key, i_value) in value.data.iter() {
+            match convert_value(i_value).context(format!(
+                "Could not convert PassSecret {} to Secret",
+                value.metadata.name
+            ))? {
+                SecretValue::String(result) => str_results.insert(i_key.to_owned(), result),
+                SecretValue::Binary(result) => bin_results.insert(i_key.to_owned(), result),
             };
         }
 
