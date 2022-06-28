@@ -5,16 +5,12 @@ a release.
 Uncomment any of the following sections when they become relevant.
 -->
 
+<!--
 ## Notable Changes
 Below are some of the most relevant changes that are introduced with this release.
 You should read at least the *Breaking Changes* section.
 
-<!--
 ### Breaking Changes
--->
 
 ### Additions
-
-- Add support for setting how kustomize behaves when handling the generated resource.
-    This can be done by setting a dedicated `behavior` field in `PassSecret` resources.
-- Print input and output resources on trace log level
+-->
