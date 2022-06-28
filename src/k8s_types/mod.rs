@@ -2,6 +2,7 @@
 
 mod field_ref;
 mod file_ref;
+mod generator_behavior;
 mod k8s_secret;
 mod krm_result;
 mod object_meta;
@@ -13,6 +14,7 @@ mod type_id;
 
 pub use field_ref::FieldRef;
 pub use file_ref::FileRef;
+pub use generator_behavior::GeneratorBehavior;
 pub use k8s_secret::V1Secret;
 pub use object_meta::K8sObjectMeta;
 pub use pass_secret::V1Beta1PassSecret;
