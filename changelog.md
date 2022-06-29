@@ -14,3 +14,8 @@ You should read at least the *Breaking Changes* section.
 
 ### Additions
 -->
+
+## Internal Changes
+
+- The code regarding git credentials has been restructured a bit to only supply correct credential types to libgit.
+  This means that no SSH key will be given to git to authenticate an HTTPS pull (because that cannot ever work).

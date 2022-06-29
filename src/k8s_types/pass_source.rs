@@ -3,7 +3,7 @@ use blake2::digest::{Update, VariableOutput};
 use blake2::Blake2bVar;
 use directories::ProjectDirs;
 use git2::build::{CheckoutBuilder, RepoBuilder};
-use git2::{BranchType, Config, Cred, FetchOptions, RemoteCallbacks, Repository};
+use git2::{BranchType, Config, Cred, CredentialType, FetchOptions, RemoteCallbacks, Repository};
 use okapi::schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
@@ -92,25 +92,30 @@ impl GitPassSource {
 /// Create git2 fetch options the way it is needed
 fn create_fetch_options<'cb>() -> FetchOptions<'cb> {
     let mut remote_callbacks = RemoteCallbacks::new();
-    remote_callbacks.credentials(|url, username_from_url, _allowed_types| {
-        log::debug!(
-            "Trying to retrieve credentials for {} from credential helper",
-            url
-        );
-        Cred::credential_helper(&Config::open_default()?, url, username_from_url)
-            .or_else(|e| {
-                log::debug!(
-                    "Could not retrieve credentials from credential helper: {}",
-                    e
-                );
-                log::debug!("Trying to retrieve credentials for {} from ssh agent", url);
-                Cred::ssh_key_from_agent(username_from_url.unwrap_or("git"))
-            })
-            .or_else(|e| {
-                log::debug!("Could not retrieve credentials from ssh agent {}", e);
-                log::debug!("Using default (probably unauthenticated) credentials");
-                Cred::default()
-            })
+    remote_callbacks.credentials(|url, username_from_url, allowed_types| {
+        // use credentials from appropriate source
+        let mut creds = if allowed_types.contains(CredentialType::USER_PASS_PLAINTEXT) {
+            log::debug!("Trying to use git credentials from credential helper");
+            Cred::credential_helper(&Config::open_default()?, url, username_from_url)
+        } else if allowed_types.contains(CredentialType::SSH_KEY) {
+            log::debug!("Trying to retrieve git credentials from ssh agent");
+            Cred::ssh_key_from_agent(username_from_url.unwrap_or("git"))
+        } else {
+            log::warn!(
+                "Requested key type {:?} is not supported and cannot be supplied. Using default credentials",
+                allowed_types
+            );
+            Cred::default()
+        };
+
+        // fall back to default credentials if previous sources were unsuccessful
+        creds = creds.or_else(|e| {
+            log::debug!("Could not retrieve credentials from other sources: {}", e);
+            log::debug!("Using default (probably unauthenticated) credentials");
+            Cred::default()
+        });
+
+        creds
     });
 
     let mut fetch_options = FetchOptions::new();
