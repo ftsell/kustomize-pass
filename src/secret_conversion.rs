@@ -26,7 +26,11 @@ fn convert_value(pass_name: &str) -> anyhow::Result<SecretValue> {
     }?;
 
     // read and decrypt content from entry
-    let bin_result = pass_entry.plain_io()?.as_ref().to_owned();
+    let bin_result = pass_entry
+        .plain_io()
+        .context(format!("Could not retrieve secret {pass_name}"))?
+        .as_ref()
+        .to_owned();
     Ok(match String::from_utf8(bin_result) {
         Ok(str_result) => SecretValue::String(
             str_result
