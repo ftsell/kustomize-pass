@@ -87,6 +87,8 @@ fn create_ssh_credentials(username_from_url: Option<&str>) -> Result<Cred, git2:
 }
 
 /// Create git2 fetch options the way it is needed
+///
+/// This essentially configures a credential callback that tries to mimic the [behavior of git itself](https://git-scm.com/docs/gitcredentials#_requesting_credentials).
 fn create_fetch_options<'cb>() -> FetchOptions<'cb> {
     let mut remote_callbacks = RemoteCallbacks::new();
     remote_callbacks.credentials(|url, username_from_url, allowed_types| {
