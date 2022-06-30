@@ -15,6 +15,7 @@
 
 pub mod cli;
 mod exec_krm_function;
+mod git_util;
 pub mod k8s_types;
 mod print_schema;
 mod secret_conversion;
