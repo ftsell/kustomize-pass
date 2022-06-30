@@ -2,14 +2,71 @@ use anyhow::{anyhow, Context};
 use directories::UserDirs;
 use git2::build::{CheckoutBuilder, RepoBuilder};
 use git2::{BranchType, Config, Cred, CredentialType, FetchOptions, RemoteCallbacks, Repository};
+use std::env;
 use std::path::Path;
+use subprocess::Exec;
+
+/// prompt the askpass program given by *exe* for *field* of the given *url*.
+fn prompt_git_askpass(exe: &str, field: &str, url: &str) -> Result<String, git2::Error> {
+    // run exe and wait for completion
+    log::trace!("Executing askpass program: {exe} \"{field} for '{url}'\"");
+    let response = Exec::cmd(exe)
+        .arg(format!("{field} for '{url}':"))
+        .capture()
+        .map_err(|e| {
+            git2::Error::new(
+                git2::ErrorCode::Auth,
+                git2::ErrorClass::Callback,
+                format!("Could not retrieve credentials from askpass program: {e}"),
+            )
+        })?;
+    if !response.success() {
+        return Err(git2::Error::new(
+            git2::ErrorCode::Auth,
+            git2::ErrorClass::Callback,
+            format!(
+                "Could not retrieve credentials from askpass program: exit code {:?}",
+                response.exit_status
+            ),
+        ));
+    }
+    if !response.stderr.is_empty() {
+        log::trace!("askpass program stderr: {}", response.stderr_str());
+    }
+
+    // post-process response by stripping possible \n at the end
+    let response_str = response.stdout_str();
+    Ok(response_str
+        .strip_suffix('\n')
+        .unwrap_or(&response_str)
+        .to_string())
+}
 
 fn create_username_password_credentials(
     url: &str,
     username_from_url: Option<&str>,
 ) -> Result<Cred, git2::Error> {
+    // credentials from credential-helper
     log::debug!("Trying to use git credentials from credential helper");
-    Cred::credential_helper(&Config::open_default()?, url, username_from_url)
+    let mut creds = Cred::credential_helper(&Config::open_default()?, url, username_from_url);
+
+    // credentials from GIT_ASKPASS environment variable
+    if let Ok(git_askpass) = env::var("GIT_ASKPASS") {
+        creds = creds.or_else(|e| {
+            log::debug!(
+                "Could not retrieve credentials from credential helper: {}",
+                e
+            );
+            log::debug!("Trying to retrieve credentials using program given by GIT_ASKPASS environment variable");
+
+            let username = prompt_git_askpass(&git_askpass, "Username", url)?;
+            let password = prompt_git_askpass(&git_askpass, "Password", url)?;
+            log::trace!("{username}:{password}");
+            Cred::userpass_plaintext(&username, &password)
+        })
+    }
+
+    creds
 }
 
 fn create_ssh_credentials(username_from_url: Option<&str>) -> Result<Cred, git2::Error> {
