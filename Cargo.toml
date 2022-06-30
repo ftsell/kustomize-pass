@@ -3,7 +3,7 @@
 name = "kustomize-pass"
 description = "kustomize generator and transformer plugin for pass managed secrets"
 documentation = "https://docs.rs/kustomize-pass"
-version = "0.5.0"
+version = "0.5.1-pre"
 authors = ["Finn Sell <dev@finn-thorben.me>"]
 edition = "2021"
 repository = "https://github.com/ftsell/kustomize-pass"
@@ -26,12 +26,12 @@ base64 = "0.13.0"
 blake2 = "0.10.4"
 clap = { version = "3.2.8", features = ["derive"]}
 directories = "4.0.1"
-flexi_logger = "0.22.5"
 git2 = "0.14.4"
 hex = "0.4.3"
-libpass = "0.3.0"
+libpass = { git = "https://github.com/ftsell/libpass-rs.git", branch = "main", version = "0.3.0" }
 log = "0.4.17"
 okapi = "0.7.0-rc.1"
+pretty_env_logger = "0.4.0"
 schemars = "0.8.10"
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0.82"

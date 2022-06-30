@@ -28,11 +28,7 @@ use std::process::exit;
 
 fn main() {
     let cli_args = CliArgs::parse();
-    flexi_logger::Logger::try_with_env_or_str("info")
-        .unwrap()
-        .log_to_stderr()
-        .start()
-        .expect("Could not initialize logging");
+    pretty_env_logger::init();
 
     let result = match cli_args.command {
         None => exec_krm_function::exec_krm_function(),
