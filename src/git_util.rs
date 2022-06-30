@@ -4,30 +4,41 @@ use git2::build::{CheckoutBuilder, RepoBuilder};
 use git2::{BranchType, Config, Cred, CredentialType, FetchOptions, RemoteCallbacks, Repository};
 use std::path::Path;
 
+fn create_username_password_credentials(
+    url: &str,
+    username_from_url: Option<&str>,
+) -> Result<Cred, git2::Error> {
+    log::debug!("Trying to use git credentials from credential helper");
+    Cred::credential_helper(&Config::open_default()?, url, username_from_url)
+}
+
+fn create_ssh_credentials(username_from_url: Option<&str>) -> Result<Cred, git2::Error> {
+    // ssh key from agent or from ~/.ssh/id_rsa
+    log::debug!("Trying to retrieve git credentials from ssh agent");
+
+    Cred::ssh_key_from_agent(username_from_url.unwrap_or("git")).or_else(|e| {
+        log::debug!("Could not retrieve credentials from ssh agent: {}", e);
+        log::debug!("Trying to retrieve use the ssh key at ~/.ssh/id_rsa instead");
+        let dirs = UserDirs::new().unwrap();
+        Cred::ssh_key(
+            username_from_url.unwrap_or("git"),
+            None,
+            &dirs.home_dir().join(".ssh").join("id_rsa"),
+            None,
+        )
+    })
+}
+
 /// Create git2 fetch options the way it is needed
 fn create_fetch_options<'cb>() -> FetchOptions<'cb> {
     let mut remote_callbacks = RemoteCallbacks::new();
     remote_callbacks.credentials(|url, username_from_url, allowed_types| {
         // use credentials from appropriate source
         let mut creds = if allowed_types.contains(CredentialType::USER_PASS_PLAINTEXT) {
-            // credential-helper
-            log::debug!("Trying to use git credentials from credential helper");
-            Cred::credential_helper(&Config::open_default()?, url, username_from_url)
-
+            create_username_password_credentials(url, username_from_url)
         } else if allowed_types.contains(CredentialType::SSH_KEY) {
-            // ssh key from agent or from ~/.ssh/id_rsa
-            log::debug!("Trying to retrieve git credentials from ssh agent");
-
-            Cred::ssh_key_from_agent(username_from_url.unwrap_or("git"))
-                .or_else(|e| {
-                    log::debug!("Could not retrieve credentials from ssh agent: {}", e);
-                    log::debug!("Trying to retrieve use the ssh key at ~/.ssh/id_rsa instead");
-                    let dirs = UserDirs::new().unwrap();
-                    Cred::ssh_key(username_from_url.unwrap_or("git"), None, &dirs.home_dir().join(".ssh").join("id_rsa"), None)
-                })
-
+            create_ssh_credentials(username_from_url)
         } else {
-            // default credentials
             log::warn!(
                 "Requested key type {:?} is not supported and cannot be supplied. Using default credentials",
                 allowed_types
