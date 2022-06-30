@@ -46,24 +46,38 @@ fn create_username_password_credentials(
     url: &str,
     username_from_url: Option<&str>,
 ) -> Result<Cred, git2::Error> {
+    let git_config = Config::open_default()?;
+
     // credentials from credential-helper
     log::debug!("Trying to use git credentials from credential helper");
-    let mut creds = Cred::credential_helper(&Config::open_default()?, url, username_from_url);
+    let mut creds = Cred::credential_helper(&git_config, url, username_from_url);
 
     // credentials from GIT_ASKPASS environment variable
     if let Ok(git_askpass) = env::var("GIT_ASKPASS") {
         creds = creds.or_else(|e| {
             log::debug!(
-                "Could not retrieve credentials from credential helper: {}",
-                e
+                "Could not retrieve credentials from credential helper: {e}"
             );
             log::debug!("Trying to retrieve credentials using program given by GIT_ASKPASS environment variable");
 
             let username = prompt_git_askpass(&git_askpass, "Username", url)?;
             let password = prompt_git_askpass(&git_askpass, "Password", url)?;
-            log::trace!("{username}:{password}");
             Cred::userpass_plaintext(&username, &password)
         })
+    }
+
+    // credentials from core.askPass configuration
+    if let Ok(entry) = git_config.get_entry("config.askPass") {
+        if let Some(git_askpass) = entry.value() {
+            creds = creds.or_else(|e| {
+                log::debug!("Could not retrieve credentials from other sources: {e}");
+                log::debug!("Trying to retrieve credentials from program given by core.askPass configuration");
+
+                let username = prompt_git_askpass(git_askpass, "Username", url)?;
+                let password = prompt_git_askpass(git_askpass, "Password", url)?;
+                Cred::userpass_plaintext(&username, &password)
+            })
+        }
     }
 
     creds

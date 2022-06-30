@@ -16,7 +16,7 @@ You should read at least the *Breaking Changes* section.
 ### Additions
 
 - Add support for reading ssh keys from ~/.ssh/id_rsa
-- Add support for reading username/password credentials from program specified by *GIT_ASKPASS* environment variable.
+- Add support for reading username/password credentials from program specified by *GIT_ASKPASS* environment variable or by *core.askPass* configuration.
 
 ## Internal Changes
 
