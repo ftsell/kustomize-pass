@@ -27,8 +27,10 @@ fn convert_value(pass_name: &str) -> anyhow::Result<SecretValue> {
 
     // read and decrypt content from entry
     let bin_result = pass_entry
-        .plain_io()
-        .context(format!("Could not retrieve secret {pass_name}"))?
+        .plain_io_ro()
+        .context(format!(
+            "Could not open secret {pass_name} in plain io mode"
+        ))?
         .as_ref()
         .to_owned();
     Ok(match String::from_utf8(bin_result) {
