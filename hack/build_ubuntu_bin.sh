@@ -12,8 +12,9 @@ buildah run $container chmod +x /root/rustup.sh
 buildah run $container /root/rustup.sh -y
 
 # compile kustomize-pass
-rm -rf $D/target/release
+rm -rf $D/target/debug $D/target/kustomize-pass--linux-ubuntu2204
 buildah run $container mkdir -p /app/src
-buildah run -v $D:/app/src $container bash -c "cd /app/src && source /root/.cargo/env && cargo build --profile=release"
+buildah run -v $D:/app/src $container bash -c "cd /app/src && source /root/.cargo/env && cargo update && cargo build"
+buildah run -v $D:/app/src $container cp /app/src/target/debug/kustomize-pass /app/src/target/kustomize-pass--linux-ubuntu2204
 
 buildah rm $container
