@@ -6,6 +6,12 @@
 A kustomize plugin that is able to generate secrets by extracting them from [pass](https://www.passwordstore.org/)
 or replace placeholders in other manifests from pass.
 
+## Disclaimer
+
+kustomize currently has an issue regarding the execution of krm functions (this plugin is one) which prevents the execution of this plugin under some circumstances.
+A pull request is on its way and successfully resolves all known issues.
+See [kustomize PR #4654](https://github.com/kubernetes-sigs/kustomize/pull/4654) for more details.
+
 ## Installation
 For installation, this package depends on [gpgme-rs](https://crates.io/crates/gpgme) which requires the gpgme library and its development files (e.g., headers, gpgme-config) to be installed during the build process.
 You should install these using your operating systems package manager.
