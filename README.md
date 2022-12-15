@@ -40,7 +40,7 @@ metadata:
         path: kustomize-pass
 behavior: create    # can be create, merge or replace
 source:             # can also be unspecified to use the store at ~/.password-store
-  git: https://github.com/example-user/example-repo.git
+  url: https://github.com/example-user/example-repo.git
 data:
   example-key: example-pass-name
 ```
