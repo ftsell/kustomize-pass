@@ -8,8 +8,8 @@ or replace placeholders in other manifests from pass.
 
 ## Disclaimer
 
-kustomize currently has an issue regarding the execution of krm functions (this plugin is one) which prevents the execution of this plugin under some circumstances.
-A pull request is on its way and successfully resolves all known issues.
+kustomize currently recently had an issue regarding the execution of krm functions (this plugin is one) which prevents the execution of this plugin under some circumstances.
+The issue has been resolved in kustomize v5.0.0.
 See [kustomize PR #4654](https://github.com/kubernetes-sigs/kustomize/pull/4654) for more details.
 
 ## Installation
