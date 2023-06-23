@@ -23,7 +23,7 @@ post-release-commit-message = "start next development iteration {{next_version}}
 [dependencies]
 anyhow = "1.0.57"
 base64 = "0.13.0"
-blake2 = "0.10.4"
+blake2 = "0.10.6"
 clap = { version = "3.2.15", features = ["derive"]}
 directories = "4.0.1"
 git2 = "0.15.0"
